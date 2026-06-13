@@ -1,0 +1,17 @@
+Aufgabe 1: ANTLR
+
+In Aufgabe 1.1 habe ich den AntlrTokenCollector umgesetzt. Dafür benutze ich den von ANTLR generierten MiniJavaLexer. Der Text wird nicht mehr mit eigenen Regex-Regeln durchsucht, sondern zuerst in Tokens zerlegt. Danach gehe ich die Tokens durch und prüfe, welchen Typ sie haben. Wenn ein Token z.B. ein Keyword, ein String, ein Char, ein Kommentar oder eine Annotation ist, wird dafür eine HighlightRegion erstellt.
+
+Die Positionen bekomme ich direkt vom Token mit getStartIndex() und getStopIndex(). Da getStopIndex() noch zum Token dazugehört, rechne ich beim Ende +1 dazu.
+
+Konflikte zwischen Regionen gibt es hier kaum, weil der Lexer den Text schon sauber in einzelne Tokens aufteilt. Deshalb musste ich keine eigene Konfliktlösung schreiben. Die vorhandenen Methoden aus der Oberklasse reichen dafür aus.
+
+Im Vergleich zu Blatt 04 ist der ANTLR-Ansatz sauberer. Bei Regex werden einfach Muster im Text gesucht. Dadurch kann es leichter passieren, dass Sachen falsch markiert werden, z.B. wenn ein Keyword in einem Kommentar oder String steht. Beim ScanningHighlighter war es schon besser, weil der Text von links nach rechts gelesen wurde, aber die Logik musste man selbst schreiben.
+
+Bei ANTLR übernimmt der generierte Lexer diese Arbeit. Am Anfang ist ANTLR etwas aufwändiger, weil die Grammatik und die generierten Klassen dazukommen. Wenn das aber schon vorbereitet ist, ist die eigentliche Implementierung einfacher und stabiler.
+
+In Aufgabe 1.2 habe ich den PrettyPrinterVisitor umgesetzt. Dafür wird zuerst mit MiniJavaLexer und MiniJavaParser ein Parse-Tree erzeugt. Danach läuft der Visitor durch diesen Parse-Tree und baut den Code neu als String auf.
+
+Ich habe vor allem die Methoden visitCompilationUnit, visitClassBody, visitBlock und visitStatement umgesetzt. Dort werden die Klammern, Einrückungen und Zeilenumbrüche geregelt. Statements mit Semikolon kommen auf eigene Zeilen. Blöcke werden eingerückt, damit der Code besser lesbar ist.
+
+Bei der Ausgabe sieht man, dass alte Leerzeichen und Zeilenumbrüche aus dem Input nicht übernommen werden. Das ist normal, weil der Lexer diese Sachen nicht als normale Tokens weitergibt. Kommentare fehlen auch, weil sie nicht automatisch im normalen Parse-Tree besucht werden. Der PrettyPrinter erstellt deshalb seine eigenen Zeilenumbrüche und Einrückungen.
